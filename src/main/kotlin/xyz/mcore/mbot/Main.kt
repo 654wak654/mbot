@@ -86,7 +86,7 @@ class MantarBot {
             embed.add("#echo <anything>", "mantarBot repeats what you said. Example: `#echo retarded screeching`")
             embed.add("#poke <user>", "\"Pokes\" the tagged user. Example: `#poke @GuerillaTime#3102`")
             embed.add("#channel <name>", "Creates a temporary channel. Example: `#channel \uD83C\uDF7B Chill Room`")
-            embed.add("#kick <user>", "Kicks user only from voice channel. Example: `#kick @TheDeadlyRacoon#1826`")
+            embed.add("#kick <user>", "Kicks user from voice channel. Example: `#kick @TheDeadlyRacoon#1826`")
             embed.add("#deleteMessages <count>", "Deletes <count> times messages from current channel.")
             embed.sendTo(message.channel)
         }
