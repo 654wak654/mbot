@@ -1,0 +1,47 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.2.61"
+}
+
+group "xyz.mcore.gradle.mbot"
+version "1.0.0"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.slf4j:slf4j-simple:1.7.25"
+    compile "net.dv8tion:JDA:3.7.1_421"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class": "xyz.mcore.mbot.MainKt",
+                "Class-Path": configurations.compile.collect { "libs/" + it.getName() }.join(" ")
+        )
+    }
+}
+
+configurations {
+    jar.archiveName = "mbot.jar"
+}
+
+task copyToLib(type: Copy) {
+    into "$rootDir/build/app/libs"
+    from configurations.runtime
+}
+
+jar.dependsOn(copyToLib)
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/build/app")
+}
