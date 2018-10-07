@@ -1,9 +1,9 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.61"
+    id "org.jetbrains.kotlin.jvm" version "1.2.71"
 }
 
 group "xyz.mcore.gradle.mbot"
-version "1.0.0"
+version "1.0.1"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,7 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.slf4j:slf4j-simple:1.7.25"
-    compile "net.dv8tion:JDA:3.7.1_421"
+    compile "net.dv8tion:JDA:3.8.0_423"
 }
 
 compileKotlin {

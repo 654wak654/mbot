@@ -125,7 +125,7 @@ class MantarBot {
             return
         }
 
-        cm.register("#poke <@!([0-9]+)>") {
+        cm.register("#poke <@(!|)([0-9]+)>") {
             val privateChannel = message.mentionedUsers[0].openPrivateChannel().complete()
             privateChannel.sendMessage("You've been poked by ${message.author.asMention} in ${message.guild.name}!").queue()
         }
@@ -149,12 +149,12 @@ class MantarBot {
             }
         }
 
-        cm.register("#kick <@!([0-9]+)>") {
+        cm.register("#kick <@(!|)([0-9]+)>") {
             if (message.member.hasPermission(Permission.KICK_MEMBERS)) {
                 val member = message.mentionedMembers[0]
                 if (member.voiceState.channel != null) {
                     val voiceChannel = message.guild.getVoiceChannelById(message.guild.controller.createVoiceChannel("temp").complete().idLong)
-                    message.guild.controller.moveVoiceMember(message.member, voiceChannel).complete()
+                    message.guild.controller.moveVoiceMember(member, voiceChannel).complete()
                     voiceChannel.delete().queue()
                 }
             }
@@ -162,9 +162,7 @@ class MantarBot {
 
         cm.register("#deleteMessages ([0-9]+)") { it ->
             if (message.member.hasPermission(Permission.MESSAGE_MANAGE)) {
-                message.channel.getHistoryBefore(message, it[0].toInt() - 1).queue { messageHistory ->
-                    message.textChannel.deleteMessages(messageHistory.retrievedHistory)
-                }
+                message.channel.iterableHistory.takeAsync(it[0].toInt() - 1).thenAccept { message.channel.purgeMessages(it) }
             }
         }
     }
