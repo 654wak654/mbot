@@ -18,7 +18,7 @@ package xyz.mcore.mbot
 import java.util.regex.Pattern
 
 class CommandManager(private val message: String) {
-    fun register(regex: String, command: (args: Array<String>) -> Unit) {
+    fun check(regex: String, command: (args: Array<String>) -> Unit) {
         val matcher = Pattern.compile(regex).matcher(message)
         if (matcher.matches()) {
             command(Array(matcher.groupCount()) { matcher?.group(it + 1) ?: "" })
