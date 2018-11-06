@@ -134,5 +134,6 @@ gradle-app.setting
 # End of https://www.gitignore.io/api/java,kotlin,gradle,intellij
 
 mbot.properties
+mbot.log
 
 \.idea/mbot\.iml
