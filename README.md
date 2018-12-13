@@ -1,5 +1,4 @@
-# mbot
-MBot - MCo's discord bot
+# MBot - MCo's discord bot
 
 ## Installation Instructions for Ubuntu
 
