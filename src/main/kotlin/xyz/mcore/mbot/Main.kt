@@ -71,7 +71,7 @@ class MantarBot {
 
     @SubscribeEvent
     fun onGuildMemberJoinEvent(event: GuildMemberJoinEvent) {
-        event.member.roles.add(event.guild.getRoleById(279359336315092992L))
+        event.guild.controller.addSingleRoleToMember(event.member, event.guild.getRoleById(279359336315092992L)).queue()
     }
 
     @SubscribeEvent
