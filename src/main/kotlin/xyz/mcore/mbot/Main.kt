@@ -79,7 +79,7 @@ class MantarBot {
         val message = event.message
         val cm = CommandManager(message.contentRaw)
 
-        cm.register("#help") {
+        cm.check("#help") {
             val embed = Embed("Commands:")
             embed.add("#roll <count> <type> + <add>", "Roll a dnd dice. Example: `#roll d6` or `#roll 2d20 + 3`")
             embed.add("#echo <anything>", "mantarBot repeats what you said. Example: `#echo retarded screeching`")
@@ -90,9 +90,9 @@ class MantarBot {
             embed.sendTo(message.channel)
         }
 
-        cm.register("#echo\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") { respondTo(message, it[0]) }
+        cm.check("#echo\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") { respondTo(message, it[0]) }
 
-        cm.register("#roll\\s+([0-9]|)(\\s*)d(4|6|8|10|12|20)((\\s*)\\+(\\s*)([0-9])|)") { it ->
+        cm.check("#roll\\s+([0-9]|)(\\s*)d(4|6|8|10|12|20)((\\s*)\\+(\\s*)([0-9])|)") { it ->
             val count = if (it[0].isEmpty()) 1 else it[0].toInt()
             val dice = it[2].toInt()
             val add = if (it[6].isEmpty()) 0 else it[6].toInt()
@@ -125,13 +125,13 @@ class MantarBot {
             return
         }
 
-        cm.register("#poke\\s+<@(!|)([0-9]+)>") {
+        cm.check("#poke\\s+<@(!|)([0-9]+)>") {
             val privateChannel = message.mentionedUsers[0].openPrivateChannel().complete()
             privateChannel.sendMessage("You've been poked by ${message.author.asMention} in ${message.guild.name}!").queue()
         }
 
         // TODO: Get rid of regex for this one, or use more inclusive regex
-        cm.register("#channel\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") {
+        cm.check("#channel\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") {
             if (message.member.voiceState.channel == null) {
                 respondTo(message, "You have to be in a voice channel before you can use the `#channel` command.")
             } else {
@@ -150,7 +150,7 @@ class MantarBot {
             }
         }
 
-        cm.register("#kick\\s+<@(!|)([0-9]+)>") {
+        cm.check("#kick\\s+<@(!|)([0-9]+)>") {
             if (message.member.hasPermission(Permission.KICK_MEMBERS)) {
                 val member = message.mentionedMembers[0]
                 if (member.voiceState.channel != null) {
@@ -161,7 +161,7 @@ class MantarBot {
             }
         }
 
-        cm.register("#deleteMessages\\s+([0-9]+)") { it ->
+        cm.check("#deleteMessages\\s+([0-9]+)") { it ->
             if (message.member.hasPermission(Permission.MESSAGE_MANAGE)) {
                 message.channel.iterableHistory.takeAsync(it[0].toInt() - 1).thenAccept { message.channel.purgeMessages(it) }
             }
