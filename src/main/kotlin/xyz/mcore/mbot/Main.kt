@@ -92,7 +92,7 @@ class MantarBot {
 
         cm.check("#echo\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") { respondTo(message, it[0]) }
 
-        cm.check("#roll\\s+([0-9]|)(\\s*)d(4|6|8|10|12|20)((\\s*)\\+(\\s*)([0-9])|)") { it ->
+        cm.check("#roll\\s+([0-9]|)(\\s*)d(4|6|8|10|12|20)((\\s*)\\+(\\s*)([0-9])|)") {
             val count = if (it[0].isEmpty()) 1 else it[0].toInt()
             val dice = it[2].toInt()
             val add = if (it[6].isEmpty()) 0 else it[6].toInt()
