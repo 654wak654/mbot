@@ -182,7 +182,7 @@ class MantarBot {
 
         cm.check(".deleteMessages\\s+([0-9]+)") { it ->
             if (message.member.hasPermission(Permission.MESSAGE_MANAGE)) {
-                message.channel.iterableHistory.takeAsync(it[0].toInt() - 1).thenAccept { message.channel.purgeMessages(it) }
+                message.channel.iterableHistory.takeAsync(it[0].toInt() + 1).thenAccept { message.channel.purgeMessages(it) }
             }
         }
     }
