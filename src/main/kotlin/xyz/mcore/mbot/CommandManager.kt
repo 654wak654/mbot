@@ -21,7 +21,7 @@ class CommandManager(private val message: String) {
     fun check(regex: String, command: (args: Array<String>) -> Unit) {
         val matcher = Pattern.compile(regex).matcher(message)
         if (matcher.matches()) {
-            command(Array(matcher.groupCount()) { matcher?.group(it + 1) ?: "" })
+            command(Array(matcher.groupCount()) { matcher.group(it + 1) ?: "" })
         }
     }
 }
