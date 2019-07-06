@@ -137,3 +137,5 @@ mbot.properties
 mbot.log
 
 \.idea/mbot\.iml
+
+\.idea/
