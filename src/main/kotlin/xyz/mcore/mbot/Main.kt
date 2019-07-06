@@ -85,19 +85,19 @@ class MantarBot {
 
     @SubscribeEvent
     fun onGuildVoiceJoinEvent(event: GuildVoiceJoinEvent) {
-        activityChannel.sendMessage("`${event.member.nickname}` joined _${event.channelJoined.name}_").queue()
+        activityChannel.sendMessage("`${event.member.effectiveName}` joined _${event.channelJoined.name}_").queue()
     }
 
     // TODO: Can't distinguish between user moving and admin moving them
     @SubscribeEvent
     fun onGuildVoiceMoveEvent(event: GuildVoiceMoveEvent) {
-        activityChannel.sendMessage("`${event.member.nickname}` moved to _${event.channelJoined.name}_").queue()
+        activityChannel.sendMessage("`${event.member.effectiveName}` moved to _${event.channelJoined.name}_").queue()
     }
 
     // TODO: Can't distinguish between user leaving and admin disconnecting them
     @SubscribeEvent
     fun onGuildVoiceLeaveEvent(event: GuildVoiceLeaveEvent) {
-        activityChannel.sendMessage("`${event.member.nickname}` left").queue()
+        activityChannel.sendMessage("`${event.member.effectiveName}` left").queue()
     }
 
     @SubscribeEvent
