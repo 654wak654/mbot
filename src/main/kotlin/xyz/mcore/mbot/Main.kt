@@ -32,6 +32,10 @@ import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 import net.dv8tion.jda.core.hooks.SubscribeEvent
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -85,24 +89,24 @@ class MantarBot {
 
     @SubscribeEvent
     fun onGuildVoiceJoinEvent(event: GuildVoiceJoinEvent) {
-        activityChannel.sendMessage("`${event.member.effectiveName}` joined _${event.channelJoined.name}_").queue()
+        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` joined `${event.channelJoined.name}`").queue()
     }
 
     // TODO: Can't distinguish between user moving and admin moving them
     @SubscribeEvent
     fun onGuildVoiceMoveEvent(event: GuildVoiceMoveEvent) {
-        activityChannel.sendMessage("`${event.member.effectiveName}` moved to _${event.channelJoined.name}_").queue()
+        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` moved to `${event.channelJoined.name}`").queue()
     }
 
     // TODO: Can't distinguish between user leaving and admin disconnecting them
     @SubscribeEvent
     fun onGuildVoiceLeaveEvent(event: GuildVoiceLeaveEvent) {
-        activityChannel.sendMessage("`${event.member.effectiveName}` left").queue()
+        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` left").queue()
     }
 
     @SubscribeEvent
     fun onGuildMemberNickChangeEvent(event: GuildMemberNickChangeEvent) {
-        activityChannel.sendMessage("`${event.prevNick}` changed their nickname to `${event.newNick}`").queue()
+        activityChannel.sendMessage("[${currentTime()}] `${event.prevNick}` changed their nickname to `${event.newNick}`").queue()
     }
 
     @SubscribeEvent
@@ -185,6 +189,10 @@ class MantarBot {
                 message.channel.iterableHistory.takeAsync(it[0].toInt() + 1).thenAccept { message.channel.purgeMessages(it) }
             }
         }
+    }
+
+    private fun currentTime(): String {
+        return ZonedDateTime.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("HH:MM:SS"))
     }
 
     private fun respondTo(message: Message, response: String) {
