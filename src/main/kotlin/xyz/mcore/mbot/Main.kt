@@ -29,11 +29,10 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent
-import net.dv8tion.jda.core.hooks.AnnotatedEventManager
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
+import net.dv8tion.jda.core.hooks.AnnotatedEventManager
 import net.dv8tion.jda.core.hooks.SubscribeEvent
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -89,24 +88,24 @@ class MantarBot {
 
     @SubscribeEvent
     fun onGuildVoiceJoinEvent(event: GuildVoiceJoinEvent) {
-        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` joined `${event.channelJoined.name}`").queue()
+        activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" joined \"${event.channelJoined.name}\"`").queue()
     }
 
     // TODO: Can't distinguish between user moving and admin moving them
     @SubscribeEvent
     fun onGuildVoiceMoveEvent(event: GuildVoiceMoveEvent) {
-        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` moved to `${event.channelJoined.name}`").queue()
+        activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" moved to \"${event.channelJoined.name}\"`").queue()
     }
 
     // TODO: Can't distinguish between user leaving and admin disconnecting them
     @SubscribeEvent
     fun onGuildVoiceLeaveEvent(event: GuildVoiceLeaveEvent) {
-        activityChannel.sendMessage("[${currentTime()}] `${event.member.effectiveName}` left").queue()
+        activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" left`").queue()
     }
 
     @SubscribeEvent
     fun onGuildMemberNickChangeEvent(event: GuildMemberNickChangeEvent) {
-        activityChannel.sendMessage("[${currentTime()}] `${event.prevNick}` changed their nickname to `${event.newNick}`").queue()
+        activityChannel.sendMessage("`[${currentTime()}] \"${event.prevNick}\" changed their nickname to \"${event.newNick}\"`").queue()
     }
 
     @SubscribeEvent
@@ -192,7 +191,7 @@ class MantarBot {
     }
 
     private fun currentTime(): String {
-        return ZonedDateTime.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("HH:MM:SS"))
+        return ZonedDateTime.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("HH:mm:ss"))
     }
 
     private fun respondTo(message: Message, response: String) {
