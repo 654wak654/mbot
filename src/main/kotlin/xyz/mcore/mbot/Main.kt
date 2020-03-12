@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 fun main() {
     val intents = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
@@ -179,12 +180,13 @@ class MantarBot : ListenerAdapter() {
 
     private fun giveMask(member: Member) {
         val mask = "\uD83D\uDE37 "
+        val name = member.effectiveName
         if (
-                !member.effectiveName.startsWith(mask) &&
+                !name.startsWith(mask) &&
                 member.idLong != 151408054733242368L &&
                 member.idLong != 76038937738481664L
         ) {
-            member.modifyNickname(mask + member.effectiveName).queue()
+            member.modifyNickname(mask + name.substring(0, min(name.length, 29))).queue()
         }
     }
 }
