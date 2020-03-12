@@ -15,23 +15,21 @@
  */
 package xyz.mcore.mbot
 
-import net.dv8tion.jda.core.AccountType
-import net.dv8tion.jda.core.JDABuilder
-import net.dv8tion.jda.core.OnlineStatus
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.entities.Game
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.TextChannel
-import net.dv8tion.jda.core.events.ReadyEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import net.dv8tion.jda.core.hooks.AnnotatedEventManager
-import net.dv8tion.jda.core.hooks.SubscribeEvent
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.ChunkingFilter
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -40,76 +38,57 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 fun main() {
-    JDABuilder(AccountType.BOT)
-            .setToken(Conf.get("bot.token"))
-            .setEventManager(AnnotatedEventManager())
-            .addEventListener(MantarBot())
+    val intents = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
+    intents.add(GatewayIntent.GUILD_MEMBERS)
+    intents.add(GatewayIntent.GUILD_PRESENCES)
+
+    JDABuilder.create(Conf.get("bot.token"), intents)
+            .setMemberCachePolicy(MemberCachePolicy.ALL)
+            .setChunkingFilter(ChunkingFilter.ALL)
+            .addEventListeners(MantarBot())
             .build()
 }
 
-class MantarBot {
+class MantarBot : ListenerAdapter() {
     private lateinit var activityChannel: TextChannel
 
-    @SubscribeEvent
-    fun onReadyEvent(event: ReadyEvent) {
+    override fun onReady(event: ReadyEvent) {
         val name = Conf.get("presence.name")
         val game = when (Conf.get("presence.activity").toLowerCase()) {
-            "playing" -> Game.playing(name)
-            "watching" -> Game.watching(name)
-            "listening" -> Game.listening(name)
+            "playing" -> Activity.playing(name)
+            "watching" -> Activity.watching(name)
+            "listening" -> Activity.listening(name)
             else -> null
         }
-        if (game != null) {
-            event.jda.presence.setPresence(OnlineStatus.ONLINE, game)
-        }
+        event.jda.presence.setPresence(OnlineStatus.ONLINE, game)
 
-        activityChannel = event.jda.getGuildById(151408461412827136L).getTextChannelById(597016805445337108L)
-
-        /*
-        // Ar da kicker
-        // Not implemented because event.jda can be null after this event ends,
-        // but the scheduler will keep going long after the event ends
-        val scheduler = Executors.newSingleThreadScheduledExecutor()
-        scheduler.scheduleAtFixedRate({
-            val mco = event.jda.getGuildById(151408461412827136L)
-            val arda = mco.getMemberById(279702081168998400L)
-
-            if (arda.voiceState.channel != null && arda.voiceState.channel.idLong != 239708818592759810L) {
-                mco.controller.moveVoiceMember(arda, mco.getVoiceChannelById(239708818592759810L)).queue()
-            }
-        }, 0, 72, TimeUnit.HOURS)
-        */
+        activityChannel = event.jda.getGuildById(151408461412827136L)!!.getTextChannelById(597016805445337108L)!!
     }
 
-    @SubscribeEvent
-    fun onGuildMemberJoinEvent(event: GuildMemberJoinEvent) {
-        event.guild.controller.addSingleRoleToMember(event.member, event.guild.getRoleById(279359336315092992L)).queue()
+    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+        event.guild.addRoleToMember(event.member, event.guild.getRoleById(279359336315092992L)!!).queue()
     }
 
-    @SubscribeEvent
-    fun onGuildVoiceJoinEvent(event: GuildVoiceJoinEvent) {
+    override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
         activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" joined \"${event.channelJoined.name}\"`").queue()
     }
 
     // TODO: Can't distinguish between user moving and admin moving them
-    @SubscribeEvent
-    fun onGuildVoiceMoveEvent(event: GuildVoiceMoveEvent) {
+    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
         activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" moved to \"${event.channelJoined.name}\"`").queue()
     }
 
     // TODO: Can't distinguish between user leaving and admin disconnecting them
-    @SubscribeEvent
-    fun onGuildVoiceLeaveEvent(event: GuildVoiceLeaveEvent) {
+    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
         activityChannel.sendMessage("`[${currentTime()}] \"${event.member.effectiveName}\" left`").queue()
     }
 
-    @SubscribeEvent
-    fun onGuildMemberNickChangeEvent(event: GuildMemberNickChangeEvent) {
-        activityChannel.sendMessage("`[${currentTime()}] \"${event.prevNick}\" changed their nickname to \"${event.newNick}\"`").queue()
+    override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
+        activityChannel.sendMessage("`[${currentTime()}] \"${event.oldNickname}\" changed their nickname to \"${event.newNickname}\"`").queue()
+        giveMask(event.member)
     }
 
-    @SubscribeEvent
-    fun onMessageReceivedEvent(event: MessageReceivedEvent) {
+    override fun onMessageReceived(event: MessageReceivedEvent) {
         val message = event.message
         val cm = CommandManager(message.contentRaw)
 
@@ -165,11 +144,11 @@ class MantarBot {
 
         // TODO: Get rid of regex for this one, or use more inclusive regex
         cm.check(".channel\\s+([ -~ÇçĞğİıÖöŞşÜü]+)") {
-            if (message.member.voiceState.channel == null) {
+            if (message.member!!.voiceState!!.channel == null) {
                 respondTo(message, "You have to be in a voice channel before you can use the `.channel` command.")
             } else {
-                val voiceChannel = message.guild.getVoiceChannelById(message.guild.controller.createVoiceChannel(it[0]).complete().idLong)
-                message.guild.controller.moveVoiceMember(message.member, voiceChannel).complete()
+                val voiceChannel = message.guild.getVoiceChannelById(message.guild.createVoiceChannel(it[0]).complete().idLong)
+                message.guild.moveVoiceMember(message.member!!, voiceChannel).complete()
 
                 val scheduler = Executors.newSingleThreadScheduledExecutor()
                 scheduler.scheduleAtFixedRate({
@@ -184,7 +163,7 @@ class MantarBot {
         }
 
         cm.check(".deleteMessages\\s+([0-9]+)") { it ->
-            if (message.member.hasPermission(Permission.MESSAGE_MANAGE)) {
+            if (message.member!!.hasPermission(Permission.MESSAGE_MANAGE)) {
                 message.channel.iterableHistory.takeAsync(it[0].toInt() + 1).thenAccept { message.channel.purgeMessages(it) }
             }
         }
@@ -196,5 +175,16 @@ class MantarBot {
 
     private fun respondTo(message: Message, response: String) {
         message.channel.sendMessage("${message.author.asMention}: $response").queue()
+    }
+
+    private fun giveMask(member: Member) {
+        val mask = "\uD83D\uDE37 "
+        if (
+                !member.effectiveName.startsWith(mask) &&
+                member.idLong != 151408054733242368L &&
+                member.idLong != 76038937738481664L
+        ) {
+            member.modifyNickname(mask + member.effectiveName).queue()
+        }
     }
 }
