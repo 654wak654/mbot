@@ -68,6 +68,7 @@ class MantarBot : ListenerAdapter() {
 
     override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
         event.guild.addRoleToMember(event.member, event.guild.getRoleById(279359336315092992L)!!).queue()
+        giveMask(event.member)
     }
 
     override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
