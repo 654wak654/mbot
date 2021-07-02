@@ -3,5 +3,5 @@
 systemctl stop mbot
 git pull
 gradle clean
-gradle jar
+gradle assemble
 systemctl start mbot

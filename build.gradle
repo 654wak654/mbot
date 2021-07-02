@@ -1,46 +1,34 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.3.50"
+    id "org.jetbrains.kotlin.jvm" version "1.5.20"
+    id "org.springframework.boot" version "2.3.12.RELEASE"
 }
 
+apply plugin: "java"
+
 group "xyz.mcore.gradle.mbot"
-version "1.1.1"
+version "1.2.0"
 
 repositories {
-    jcenter()
+    mavenCentral()
+    maven {
+        name "m2-dv8tion"
+        url "https://m2.dv8tion.net/releases"
+    }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.41"
-    compile "org.slf4j:slf4j-simple:1.7.30"
-    compile "net.dv8tion:JDA:4.1.1_111"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20"
+    implementation "org.apache.logging.log4j:log4j:2.14.1"
+    implementation("net.dv8tion:JDA:4.3.0_277") {
+        exclude module: 'opus-java'
+    }
 }
 
 compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    kotlinOptions.jvmTarget = "11"
 }
 
-jar {
-    manifest {
-        attributes(
-                "Main-Class": "xyz.mcore.mbot.MainKt",
-                "Class-Path": configurations.compile.collect { "libs/" + it.getName() }.join(" ")
-        )
-    }
-}
-
-configurations {
-    jar.archiveName = "mbot.jar"
-}
-
-task copyToLib(type: Copy) {
-    into "$rootDir/build/app/libs"
-    from configurations.runtime
-}
-
-jar.dependsOn(copyToLib)
-
-tasks.withType(Jar) {
-    destinationDir = file("$rootDir/build/app")
+bootJar {
+    mainClassName = "xyz.mcore.mbot.MainKt"
+    archiveFileName = "mbot.jar"
 }

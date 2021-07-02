@@ -55,7 +55,7 @@ class MantarBot : ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
         val name = Conf.get("presence.name")
-        val game = when (Conf.get("presence.activity").toLowerCase()) {
+        val game = when (Conf.get("presence.activity").lowercase(Locale.getDefault())) {
             "playing" -> Activity.playing(name)
             "watching" -> Activity.watching(name)
             "listening" -> Activity.listening(name)
@@ -96,8 +96,8 @@ class MantarBot : ListenerAdapter() {
 
         cm.check("help") {
             val embed = Embed("Commands:")
-            embed.add(".roll <count> <type> + <add>", "Roll a dnd dice. Example: `.roll d6` or `.roll 2d20 + 3`")
             embed.add(".echo <anything>", "mantarBot repeats what you said. Example: `.echo retarded screeching`")
+            embed.add(".roll <count> <type> + <add>", "Roll a dnd dice. Example: `.roll d6` or `.roll 2d20 + 3`")
             embed.add(".poke <user>", "\"Pokes\" the tagged user. Example: `.poke @GuerillaTime#3102`")
             embed.add(".channel <name>", "Creates a temporary channel. Example: `.channel \uD83C\uDF7B Chill Room`")
             embed.add(".deleteMessages <count>", "Deletes <count> times messages from current channel.")

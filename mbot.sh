@@ -13,7 +13,7 @@ while getopts ":s" opt; do
 done
 
 if [ "$isService" = true ]; then
-    java -jar build/app/mbot.jar > mbot.log 2>&1
+    java -jar build/libs/mbot.jar > mbot.log 2>&1
 else
-    java -jar build/app/mbot.jar
+    java -jar build/libs/mbot.jar
 fi
