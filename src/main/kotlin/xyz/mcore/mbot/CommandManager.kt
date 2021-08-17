@@ -19,7 +19,7 @@ import java.util.regex.Pattern
 
 class CommandManager(private val message: String) {
     fun check(regex: String, command: (args: Array<String>) -> Unit) {
-        val matcher = Pattern.compile(regex).matcher(message)
+        val matcher = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS).matcher(message)
         if (matcher.matches()) {
             command(Array(matcher.groupCount()) { matcher.group(it + 1) ?: "" })
         }
