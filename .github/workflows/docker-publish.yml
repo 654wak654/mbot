@@ -1,0 +1,35 @@
+name: Publish mbot image
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to ghcr
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save release tag to env
+        run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Build, tag, and push image to ghcr
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/654wak654/mbot:${{ env.TAG }}
+          build-args: |
+            TAG=${{ env.TAG }}
