@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+    mbot:
+        container_name: mbot
+        build: .
+        restart: unless-stopped
+        volumes:
+            - ./mbot.properties:/usr/src/app/mbot.properties
